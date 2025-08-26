@@ -2,6 +2,7 @@ package com.devsuperior.dscommerce.entities;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -113,6 +114,23 @@ public class Product {
 				.stream()//
 				.map(orderItem -> orderItem.getOrder()) //
 				.toList();
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Product other = (Product) obj;
+		return Objects.equals(id, other.id);
 	}
 	
 }
