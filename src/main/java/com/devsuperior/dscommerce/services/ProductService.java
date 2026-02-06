@@ -1,27 +1,36 @@
 package com.devsuperior.dscommerce.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.devsuperior.dscommerce.dtos.ProductDTO;
 import com.devsuperior.dscommerce.entities.Product;
 import com.devsuperior.dscommerce.repositories.ProductRepository;
+import com.devsuperior.dscommerce.services.exceptions.DatabaseException;
+import com.devsuperior.dscommerce.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ProductService {
 
 	@Autowired
 	private ProductRepository productRepository;
-	
+
 	@Transactional(readOnly = true)
 	public ProductDTO findById(Long id) {
-		Product product = productRepository.findById(id).get();
+		Product product = productRepository //
+				.findById(id) //
+				.orElseThrow( //
+						() -> new ResourceNotFoundException("Recurso não encontrado") // Lança exceção customizada caso não encontre objeto
+				);
+
 		return new ProductDTO(product);
 	}
-	
+
 	/**
 	 * Busca paginada
 	 */
@@ -30,7 +39,7 @@ public class ProductService {
 		Page<Product> products = productRepository.findAll(pageable);
 		return products.map(product -> new ProductDTO(product));
 	}
-	
+
 	@Transactional
 	public ProductDTO insert(ProductDTO dto) {
 		Product entity = new Product();
@@ -39,22 +48,31 @@ public class ProductService {
 
 	@Transactional
 	public ProductDTO update(Long id, ProductDTO dto) {
-		Product entity = productRepository.getReferenceById(id); //Busca um produto já existente, apenas por referencia, não no BD
+		Product entity = productRepository.getReferenceById(id); // Busca um produto já existente, apenas por
+																	// referencia, não no BD
 		return saveEntity(dto, entity);
 	}
-	
+
 	private ProductDTO saveEntity(ProductDTO dto, Product entity) {
 		entity.setName(dto.getName());
 		entity.setDescription(dto.getDescription());
 		entity.setImgUrl(dto.getImgUrl());
 		entity.setPrice(dto.getPrice());
-		
+
 		entity = productRepository.save(entity);
 		return new ProductDTO(entity);
 	}
-	
-	@Transactional
+
+	@Transactional(propagation = Propagation.SUPPORTS)
 	public void delete(Long id) {
-		productRepository.deleteById(id);
+		if (!productRepository.existsById(id)) {
+			throw new ResourceNotFoundException("Recurso não encontrado");
+		}
+		try {
+			productRepository.deleteById(id);    		
+		}
+	    	catch (DataIntegrityViolationException e) {
+	        	throw new DatabaseException("Falha de integridade referencial");
+	   	}
 	}
 }
