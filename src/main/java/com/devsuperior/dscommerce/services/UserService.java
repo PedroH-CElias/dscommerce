@@ -26,6 +26,15 @@ public class UserService implements UserDetailsService {
 			throw new UsernameNotFoundException("User not found");
 		}
 		
+		/**
+		 * Instancia um novo User
+		 * Atribuiu o username passado por parametro ao email.
+		 * Como é somente um usuário com esse username, pega o get(0) e associa a senha
+		 * buscada do bd ao password do user.
+		 * Percorre a lista, que pode possuir mais de um dado devido ao usuario ter mais de um perfil (Ex: ADM e CLIENT)
+		 * E no loop cria um novo Role (Perfil/Função do Usuário) adicionado o Id que buscou da tabela de Role e o tipo de Autorização
+		 * que o usuário possui no sistema (Ex: ADM e CLIENT), associando esses dados ao User criado.
+		 */
 		User user = new User();
 		user.setEmail(username);
 		user.setPassword(result.get(0).getPassword());

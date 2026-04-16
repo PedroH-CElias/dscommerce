@@ -31,8 +31,6 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 
-	//Controle de acesso por perfil e rota
-	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_OPERATOR')")
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<ProductDTO> findById(@PathVariable Long id) {
 		ProductDTO dto = productService.findById(id);
@@ -48,7 +46,7 @@ public class ProductController {
 	}
 	
 	//Controle de acesso por perfil e rota
-	@PreAuthorize("hasRole('ROLE_ADMIN')")
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	// Boa pratica dessa forma
 	@PostMapping
 	public ResponseEntity<ProductDTO> insert(@Valid @RequestBody ProductDTO dto) {
@@ -63,12 +61,16 @@ public class ProductController {
 		return ResponseEntity.created(uri).body(dto);
 	}
 	
+	//Controle de acesso por perfil e rota
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<ProductDTO> update(@PathVariable Long id, @Valid @RequestBody ProductDTO dto) {
 		dto = productService.update(id, dto); 
 		return ResponseEntity.ok(dto);
 	}
 	
+	//Controle de acesso por perfil e rota
+	@PreAuthorize("hasAnyRole('ROLE_ADMIN')")
 	@DeleteMapping(value = "/{id}")
 	public ResponseEntity<Void> delete(@PathVariable Long id) {
 		productService.delete(id);

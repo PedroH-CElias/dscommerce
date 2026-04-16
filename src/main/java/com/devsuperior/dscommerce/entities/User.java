@@ -125,6 +125,15 @@ public class User implements UserDetails { // Interface que possui métodos de v
 	public void addRole(Role role) {
 		roles.add(role);
 	}
+	
+	public boolean hasRole(String roleName) {
+    	for (Role role : roles) {
+    		if (role.getAuthority().equals(roleName)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 
 	@Override
 	public int hashCode() {
