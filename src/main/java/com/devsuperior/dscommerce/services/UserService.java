@@ -65,6 +65,7 @@ public class UserService implements UserDetailsService {
 		}
 	}
 	
+	// Busca o Usuário Logado
 	@Transactional(readOnly = true)
 	public UserDTO getMe() {
 		User user = authenticated();

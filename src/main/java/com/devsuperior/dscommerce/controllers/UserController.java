@@ -17,8 +17,9 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
+	// Busca o Usuário Logado
 	@PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_CLIENT')")
-	@GetMapping(value = "/me")
+	@GetMapping(value = "/me") // endPoint da request
 	public ResponseEntity<UserDTO> getMe() {
 		UserDTO dto = service.getMe();
 		return ResponseEntity.ok(dto);
