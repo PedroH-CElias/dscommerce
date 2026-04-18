@@ -32,7 +32,13 @@ public class OrderService {
 	
 	@Autowired 
 	private UserService userService;
+	
+	@Autowired 
+	private AuthService authService;
 
+	/**
+	 * Só libera o pedido, se o usuário solicitante for o dono dele ou ADMIN
+	 */
 	@Transactional(readOnly = true)
 	public OrderDTO findById(Long id) {
 		Order order = repository //
@@ -41,6 +47,9 @@ public class OrderService {
 						() -> new ResourceNotFoundException("Recurso não encontrado") // Lança exceção customizada caso
 																						// não encontre objeto
 				);
+		
+		// Passa o id do client vinculado ao pedido que está sendo buscado
+		authService.validateSelfOrAdmin(order.getClient().getId());
 
 		return new OrderDTO(order);
 	}

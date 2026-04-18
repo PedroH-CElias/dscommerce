@@ -126,6 +126,7 @@ public class User implements UserDetails { // Interface que possui métodos de v
 		roles.add(role);
 	}
 	
+	// Verifica se o usuario tem um perfil passado por parametro
 	public boolean hasRole(String roleName) {
     	for (Role role : roles) {
     		if (role.getAuthority().equals(roleName)) {
@@ -181,5 +182,5 @@ public class User implements UserDetails { // Interface que possui métodos de v
 	public boolean isEnabled() {
 		return true;
 	}
-
+	
 }
